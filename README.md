@@ -1,6 +1,18 @@
 [AlloyImage](http://alloyteam.github.com/AlloyPhoto/) - 基于HTML5技术的专业图像处理库
 ===========================
 
+### 修改
+
+#### 增加getfun的level参数，可以对美肤进行强度设置。
+
+   ```javascript
+    line 159: reflectEasy()增加level参数。
+    line 922: ps()增加level参数。
+    line 2310: getFun()为“美肤”增加level参数。建议数值为50～120间，默认100
+   ```
+
+===========================
+
 ### 功能特性
 
 #### 强大功能
