@@ -1,0 +1,105 @@
+<!DOCTYPE HTML>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>AlloyPhoto Demo1</title>
+    <style type="text/css">
+    img {
+        width: 800px;
+    }
+
+    .weui-slider-box {
+        width: 90vw;
+        margin: 10vh auto;
+    }
+    </style>
+    <link rel="stylesheet" type="text/css" href="weui.min.css" />
+    <script type="text/javascript" src="alloyimage.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <img id="pic3" src="demo.jpg" alt="" />
+    <div class="weui-slider-box">
+        <div class="weui-slider">
+            <div id="sliderInner" class="weui-slider__inner">
+                <div id="sliderTrack" style="width: 70%;" class="weui-slider__track"></div>
+                <div id="sliderHandler" style="left: 70%; width:5vw; height:5vw; margin-top:-2.5vw; margin-left:-2.5vw;" class="weui-slider__handler"></div>
+            </div>
+        </div>
+        <!-- <div id="sliderValue" class="weui-slider-box__value"></div> -->
+    </div>
+    <script type="text/javascript">
+    var min = 50,
+        max = 120,
+        per = 70,
+        level,
+        $sliderHandler = $("#sliderHandler"),
+        $sliderTrack = $("#sliderTrack"),
+        $sliderValue = $("#sliderValue"),
+        totalLen = $('#sliderInner').width(),
+        startLeft = 0,
+        startX = 0,
+        timer;
+
+    var sliderListener = function() {
+
+        $("#sliderHandler").on('touchstart', function(e) {
+            startLeft = totalLen * per / 100;
+            startX = e.originalEvent.touches[0].clientX;
+            // console.log(parseInt($sliderHandler.css('left')),totalLen,startLeft, startX);
+            e.preventDefault();
+        }).on('touchmove', function(e) {
+            // console.log(e.originalEvent.touches[0].clientX, startLeft);
+            per = startLeft + e.originalEvent.touches[0].clientX - startX;
+            per = per < 0 ? 0 : per > totalLen ? totalLen : per;
+            per = parseInt(per / totalLen * 100);
+            $sliderTrack.css('width', per + '%');
+            $sliderHandler.css('left', per + '%');
+            // $sliderValue.text(percent);
+
+            clearTimeout(timer);
+            timer = setTimeout(function() {
+                imgDeal();
+            }, 500);
+
+            e.preventDefault();
+        }).on('touchend', function() {
+            clearTimeout(timer);
+            imgDeal();
+        })
+    };
+
+    var imgDeal = function() {
+
+        picTranseObj = pic_origin.clone(); //克隆原始对象做为原始副本
+
+        level = min + (max - min) * per / 100;
+        var pic_new = picTranseObj.ps("美肤", level);
+        pic_new.replace(pic_dom);
+
+        $(pic_dom).on('touchstart', function() {
+            pic_origin.replace(pic_dom);
+        }).on('touchend', function() {
+            pic_new.replace(pic_dom);
+        });
+    }
+
+    var picTranseObj,
+        pic_origin,
+        pic_dom = document.getElementById("pic3");
+
+    pic_dom.loadOnce(function() {
+
+        pic_origin = $AI(this); //创建一个psLib对象
+
+        imgDeal();
+
+        sliderListener();
+
+    });
+    </script>
+</body>
+
+</html>
