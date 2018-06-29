@@ -5,7 +5,30 @@
     <meta charset="UTF-8">
     <title>AlloyPhoto Demo1</title>
     <style type="text/css">
-    img {
+    .imageBox {
+        width: 99vw;
+        height: 66vw;
+        position: relative;
+    }
+
+    img#pic1 {
+        position: absolute;
+        width: 99vw;
+        height: 66vw;
+        top: 0;
+        left: 0;
+        z-index: 2;
+    }
+
+    img#pic2 {
+        position: absolute;
+        width: 30vw;
+        left: 28vw;
+        top: 3vw;
+        z-index: 1;
+    }
+
+    img#pic4 {
         width: 800px;
     }
 
@@ -20,7 +43,11 @@
 </head>
 
 <body>
-    <img id="pic3" src="demo.jpg" alt="" />
+    <div class="imageBox">
+        <img id="pic1" src="images/model.png" />
+        <img id="pic2" />
+    </div>
+    <img id="pic4" src="images/demo.jpg" alt="" />
     <div class="weui-slider-box">
         <div class="weui-slider">
             <div id="sliderInner" class="weui-slider__inner">
@@ -31,6 +58,18 @@
         <!-- <div id="sliderValue" class="weui-slider-box__value"></div> -->
     </div>
     <script type="text/javascript">
+    var pic2_dom = document.getElementById("pic2");
+    var pic3_dom = document.getElementById("pic3");
+    var img_head = new Image(),
+        img_skin = new Image(),
+        $ai_skin,
+        $ai_head;
+    img_head.src = "images/3.png";
+    img_skin.src = "images/skin.png";
+
+    var picTranseObj,
+        pic_origin,
+        pic_dom = document.getElementById("pic4");
     var min = 50,
         max = 120,
         per = 70,
@@ -42,6 +81,36 @@
         startLeft = 0,
         startX = 0,
         timer;
+
+    var img_loaded_count = 0,
+        img_loaded = function() {
+            if (++img_loaded_count < 2)
+                return;
+
+            $ai_skin = $AI(img_skin);
+            $ai_head = $AI(img_head)//.add($ai_skin, "正片叠底");
+
+            imgDeal2();
+        },
+        imgDeal2 = function() {
+            var $ai_head_temp = $ai_head.clone();
+            $ai_head_temp.ps("美肤", per).replace(pic2_dom);
+        };
+
+    if (img_head.complete)
+        img_loaded();
+    else {
+        img_head.onload = function() {
+            img_loaded();
+        };
+    }
+    if (img_skin.complete)
+        img_loaded();
+    else {
+        img_skin.onload = function() {
+            img_loaded();
+        };
+    }
 
     var sliderListener = function() {
 
@@ -62,12 +131,14 @@
             clearTimeout(timer);
             timer = setTimeout(function() {
                 imgDeal();
+                imgDeal2();
             }, 500);
 
             e.preventDefault();
         }).on('touchend', function() {
             clearTimeout(timer);
             imgDeal();
+            imgDeal2();
         })
     };
 
@@ -85,10 +156,6 @@
             pic_new.replace(pic_dom);
         });
     }
-
-    var picTranseObj,
-        pic_origin,
-        pic_dom = document.getElementById("pic3");
 
     pic_dom.loadOnce(function() {
 
